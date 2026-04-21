@@ -160,6 +160,8 @@ export function ProjectOverlay({ project, onClose }: ProjectOverlayProps) {
 
 function OverviewTab({ project }: { project: Project }) {
   const accent = accentHex[project.accent];
+  const [imageError, setImageError] = useState(false);
+  const showImage = !!project.thumbnail && !imageError;
 
   return (
     <motion.div
@@ -170,16 +172,17 @@ function OverviewTab({ project }: { project: Project }) {
       className="space-y-10"
     >
       <div
-        className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/8"
+        className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/8 bg-[#050505]"
         style={{
           background: `linear-gradient(135deg, ${accent}06 0%, ${accent}12 50%, ${accent}04 100%)`,
         }}
       >
-        {project.thumbnail && (
+        {showImage && (
           <img
             src={project.thumbnail}
             alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover"
+            onError={() => setImageError(true)}
+            className="absolute inset-0 h-full w-full object-contain p-4"
             loading="lazy"
           />
         )}

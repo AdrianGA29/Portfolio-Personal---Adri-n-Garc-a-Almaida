@@ -8,9 +8,11 @@ interface ProjectPreviewProps {
 
 export function ProjectPreview({ src, title, type = "iframe" }: ProjectPreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const handleRefresh = () => {
     setIsLoading(true);
+    setImageError(false);
     const iframe = document.getElementById("project-preview-iframe") as HTMLIFrameElement;
     if (iframe) {
       iframe.src = src;
@@ -56,14 +58,24 @@ export function ProjectPreview({ src, title, type = "iframe" }: ProjectPreviewPr
           </div>
         )}
 
-        {type === "image" ? (
+        {type === "image" && !imageError ? (
           <img
             src={src}
             alt={`Preview de ${title}`}
             loading="lazy"
             onLoad={() => setIsLoading(false)}
-            className="h-[400px] w-full object-cover bg-black sm:h-[500px]"
+            onError={() => {
+              setImageError(true);
+              setIsLoading(false);
+            }}
+            className="h-[400px] w-full object-contain bg-[#050505] p-4 sm:h-[500px]"
           />
+        ) : type === "image" ? (
+          <div className="flex h-[400px] w-full items-center justify-center bg-[#050505] p-6 text-center sm:h-[500px]">
+            <p className="font-label text-[10px] font-bold uppercase tracking-[0.24em] text-white/45">
+              No se pudo cargar la imagen de preview
+            </p>
+          </div>
         ) : (
           <iframe
             id="project-preview-iframe"

@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { useState } from "react";
 import type { Project } from "@/src/data/projects";
 
 const accentHex: Record<string, string> = {
@@ -22,6 +23,8 @@ interface ProjectCardProps {
 export function ProjectCard({ project, index, onClick }: ProjectCardProps) {
   const accent = accentHex[project.accent];
   const status = statusConfig[project.status];
+  const [imageError, setImageError] = useState(false);
+  const showImage = !!project.thumbnail && !imageError;
 
   return (
     <motion.article
@@ -33,12 +36,13 @@ export function ProjectCard({ project, index, onClick }: ProjectCardProps) {
       onClick={onClick}
       className="group/card relative cursor-pointer overflow-hidden rounded-xl border border-white/8 bg-white/[0.02] transition-all duration-500 hover:border-white/16 hover:bg-white/[0.04]"
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden">
-        {project.thumbnail && (
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#050505]">
+        {showImage && (
           <img
             src={project.thumbnail}
             alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-[1.04]"
+            onError={() => setImageError(true)}
+            className="absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-700 ease-out group-hover/card:scale-[1.02]"
             loading="lazy"
           />
         )}
@@ -46,7 +50,7 @@ export function ProjectCard({ project, index, onClick }: ProjectCardProps) {
         <div
           className="absolute inset-0 transition-transform duration-700 ease-out group-hover/card:scale-[1.04]"
           style={{
-            background: project.thumbnail
+            background: showImage
               ? "linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.18) 100%)"
               : `linear-gradient(135deg, ${accent}08 0%, ${accent}18 50%, ${accent}05 100%)`,
           }}
