@@ -1,5 +1,3 @@
-// ── Types ────────────────────────────────────────────────
-
 export type ProjectCategory = "web" | "tool" | "ai" | "other";
 export type ProjectStatus = "live" | "wip" | "archived";
 
@@ -33,8 +31,6 @@ export interface Project {
   year: number;
 }
 
-// ── Project Categories ───────────────────────────────────
-
 export const categories: { key: ProjectCategory | "all"; label: string }[] = [
   { key: "all", label: "Todos" },
   { key: "ai", label: "IA & Chatbots" },
@@ -42,8 +38,6 @@ export const categories: { key: ProjectCategory | "all"; label: string }[] = [
   { key: "tool", label: "Herramientas" },
   { key: "other", label: "Otro" },
 ];
-
-// ── Projects Data ────────────────────────────────────────
 
 export const projects: Project[] = [
   {
@@ -53,7 +47,7 @@ export const projects: Project[] = [
     description:
       "Chatbot corporativo diseñado para la consulta inteligente de bases de conocimiento técnicas con control estricto de alucinaciones.",
     longDescription:
-      "Implementación de una arquitectura RAG (Retrieval-Augmented Generation) avanzada para Telefónica Empresas. El sistema permite la consulta de documentación técnica vigente, garantizando respuestas precisas mediante el uso de guardarraíles semánticos y verificación de fuentes en tiempo real, optimizando el soporte técnico nivel 1.",
+      "Implementación de una arquitectura RAG (Retrieval-Augmented Generation) avanzada para Telefónica Empresas. El sistema permite la consulta de documentación técnica vigente, garantizando respuestas precisas mediante guardarraíles semánticos y verificación de fuentes en tiempo real, optimizando el soporte técnico de nivel 1.",
     category: "ai",
     tags: ["RAG", "Gemini API", "Vector Search", "Enterprise AI"],
     accent: "primary",
@@ -64,7 +58,9 @@ export const projects: Project[] = [
       type: "image",
       src: "/projects/rag-chatbot.png",
     },
-    links: { demo: "https://ai.studio/apps/80f45748-e51f-4393-9e5d-0fc6ca4822fb" },
+    links: {
+      demo: "https://ai.studio/apps/80f45748-e51f-4393-9e5d-0fc6ca4822fb",
+    },
     features: [
       "Arquitectura RAG (Retrieval-Augmented Generation)",
       "Control estricto de alucinaciones mediante guardarraíles",
@@ -80,18 +76,25 @@ export const projects: Project[] = [
     description:
       "Portfolio inmersivo con animaciones WebGL, motion design de alto nivel y chatbot IA integrado.",
     longDescription:
-      "Mi portfolio personal, concebido como una experiencia digital premium. Desarrollado con React 19 y Three.js, implementa un sistema de diseño propio basado en motion design editorial, bento grids inteligentes y una integración nativa de IA conversacional.",
+      "Mi portfolio personal, concebido como una experiencia digital premium. Está desarrollado con React 19 y Three.js, e integra un sistema visual propio, animaciones WebGL, una narrativa editorial y un chatbot conversacional conectado a Gemini mediante una función serverless desplegada en Vercel.",
     category: "web",
-    tags: ["React", "Three.js", "TypeScript", "Tailwind", "Gemini"],
+    tags: ["React", "Three.js", "TypeScript", "Tailwind", "Gemini", "Vercel"],
     accent: "secondary",
     status: "live",
     featured: true,
-    links: { github: "#" },
+    thumbnail: "/projects/portfolio-personal.png",
+    preview: {
+      type: "image",
+      src: "/projects/portfolio-personal.png",
+    },
+    links: {
+      github: "https://github.com/AdrianGA29/Portfolio-Personal---Adri-n-Garc-a-Almaida",
+    },
     features: [
       "Animaciones WebGL con shaders TSL",
-      "Chatbot IA 'Adrian.ai' integrado",
-      "Layout editorial cinematic",
-      "Bento Grid interactivo en sección About",
+      "Chatbot IA `adrian.ai` integrado",
+      "Dirección visual editorial con hero 3D",
+      "Arquitectura frontend en React + Vite + TypeScript",
     ],
     year: 2025,
   },
@@ -113,7 +116,9 @@ export const projects: Project[] = [
       type: "image",
       src: "/projects/correos-chatbot.png",
     },
-    links: { demo: "https://ai.studio/apps/5a63ac5b-0c33-4293-9561-a98bea9268fa" },
+    links: {
+      demo: "https://ai.studio/apps/5a63ac5b-0c33-4293-9561-a98bea9268fa",
+    },
     features: [
       "Flujo de diseño conversacional optimizado",
       "Integración con API de Gemini",
@@ -140,12 +145,72 @@ export const projects: Project[] = [
       type: "image",
       src: "/projects/sanitas-chatbot.png",
     },
-    links: { demo: "https://ai.studio/apps/aa56318a-d575-48bf-8b29-0fc8e4e841eb" },
+    links: {
+      demo: "https://ai.studio/apps/aa56318a-d575-48bf-8b29-0fc8e4e841eb",
+    },
     features: [
-      "Búsqueda en internet integrada (Search capability)",
+      "Búsqueda en internet integrada",
       "Arquitectura RAG para base de conocimiento médica",
       "Gestión automatizada de citas de Sanitas Dental",
       "Interfaz intuitiva orientada a pacientes",
+    ],
+    year: 2025,
+  },
+  {
+    id: "gestoria-json-validator",
+    title: "Gestoría JSON Validator",
+    subtitle: "Data Contract Validation Tool",
+    description:
+      "Herramienta de validación de contratos de datos JSON para solicitudes de gestoría administrativa.",
+    longDescription:
+      "Experimento funcional orientado a validar contratos de datos JSON dentro de flujos de gestoría administrativa. La herramienta está preparada para comprobar estructura, consistencia y reglas de negocio en peticiones, y sirve como base para automatizar tareas repetitivas en una gestoría.",
+    category: "tool",
+    tags: ["HTML", "CSS", "JavaScript", "JSON Validation", "Automation"],
+    accent: "primary",
+    status: "wip",
+    featured: false,
+    thumbnail: "/projects/gestoria-json-validator.png",
+    preview: {
+      type: "image",
+      src: "/projects/gestoria-json-validator.png",
+    },
+    links: {
+      demo: "https://ai.studio/apps/d71e806e-b9be-4abe-9a48-96b18a70a60b",
+    },
+    features: [
+      "Validación de contratos de datos JSON",
+      "Detección de estructuras incompletas o sensibles",
+      "Base lista para automatización en gestoría administrativa",
+      "Interfaz clara para revisión manual y flujos automáticos",
+    ],
+    year: 2025,
+  },
+  {
+    id: "zalando-auto-incident-pro",
+    title: "Zalando: Auto-Incident Pro",
+    subtitle: "Smart Delivery Incident Automation",
+    description:
+      "Automatización inteligente para la gestión de incidencias de entrega con clasificación y enrutamiento en tiempo real.",
+    longDescription:
+      "Sistema experimental para atención al cliente orientado a incidencias de entrega en Zalando. Automatiza la clasificación inicial, la extracción de entidades relevantes y el enrutamiento operativo, reduciendo tiempos de respuesta y mejorando la consistencia del flujo de resolución.",
+    category: "ai",
+    tags: ["HTML", "CSS", "JavaScript", "Incident Routing", "Customer Ops"],
+    accent: "tertiary",
+    status: "wip",
+    featured: false,
+    thumbnail: "/projects/zalando-auto-incident-pro.png",
+    preview: {
+      type: "image",
+      src: "/projects/zalando-auto-incident-pro.png",
+    },
+    links: {
+      demo: "https://ai.studio/apps/3bbeee70-b34a-4ab3-bb27-f66405c48e62",
+    },
+    features: [
+      "Clasificación de incidencias en tiempo real",
+      "Extracción automática de entidades operativas",
+      "Enrutamiento inteligente para atención al cliente",
+      "Diseño enfocado en operaciones y métricas",
     ],
     year: 2025,
   },
