@@ -455,16 +455,17 @@ export default function Contact() {
   const updateField = useCallback(
     (field: keyof FormData) => (value: string) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
-      // Clear error on change
-      if (errors[field as keyof FormErrors]) {
-        setErrors((prev) => {
-          const next = { ...prev };
-          delete next[field as keyof FormErrors];
-          return next;
-        });
-      }
+      setErrors((prev) => {
+        if (!prev[field as keyof FormErrors]) {
+          return prev;
+        }
+
+        const next = { ...prev };
+        delete next[field as keyof FormErrors];
+        return next;
+      });
     },
-    [errors],
+    [],
   );
 
   const handleSubmit = useCallback(

@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { lazy, startTransition, Suspense, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Experience from "./components/Experience";
-import Projects from "./components/projects/Projects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import IntroAnimation from "./components/IntroAnimation";
-import ChatBot from "./chat/ChatBot";
+
+const Projects = lazy(() => import("./components/projects/Projects"));
+const ChatBot = lazy(() => import("./chat/ChatBot"));
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
+  const handleIntroComplete = useCallback(() => {
+    startTransition(() => {
+      setShowIntro(false);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-on-background">
       <AnimatePresence mode="wait">
         {showIntro ? (
-          <IntroAnimation key="intro" onComplete={() => setShowIntro(false)} />
+          <IntroAnimation key="intro" onComplete={handleIntroComplete} />
         ) : (
           <>
             <Navbar />
@@ -34,7 +40,9 @@ export default function App() {
                 <Hero />
                 <About />
                 <Experience />
-                <Projects />
+                <Suspense fallback={null}>
+                  <Projects />
+                </Suspense>
                 <Contact />
               </main>
               <Footer />
@@ -42,7 +50,9 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
-      <ChatBot showIntro={showIntro} />
+      <Suspense fallback={null}>
+        <ChatBot showIntro={showIntro} />
+      </Suspense>
     </div>
   );
 }

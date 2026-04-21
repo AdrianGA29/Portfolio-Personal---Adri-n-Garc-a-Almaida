@@ -1,6 +1,10 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ShaderAnimation } from "./ui/shader-lines";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+
+const ShaderAnimation = lazy(async () => {
+  const module = await import("./ui/shader-lines");
+  return { default: module.ShaderAnimation };
+});
 
 interface IntroAnimationProps {
   onComplete: () => void;
@@ -183,7 +187,9 @@ export default function IntroAnimation({ onComplete }: IntroAnimationProps) {
             transition={{ duration: 0.5 }}
           >
             <div className="absolute inset-0 opacity-85">
-              <ShaderAnimation />
+              <Suspense fallback={null}>
+                <ShaderAnimation />
+              </Suspense>
             </div>
             <div
               className="absolute inset-0"

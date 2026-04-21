@@ -10,11 +10,13 @@ interface ChatBotProps {
 export default function ChatBot({ showIntro }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isHeroVisible, setIsHeroVisible] = useState(true);
 
   // Observe Hero section to toggle launcher visibility
   useEffect(() => {
     if (showIntro) {
       setIsVisible(false);
+      setIsHeroVisible(true);
       return;
     }
 
@@ -26,21 +28,22 @@ export default function ChatBot({ showIntro }: ChatBotProps) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Hide launcher when Hero is >30% visible
         const heroVisible = entry.isIntersecting && entry.intersectionRatio > 0.3;
+        setIsHeroVisible(heroVisible);
         setIsVisible(!heroVisible);
-
-        // Close panel if scrolling back to Hero
-        if (heroVisible && isOpen) {
-          setIsOpen(false);
-        }
       },
       { threshold: [0, 0.3, 0.5, 1] },
     );
 
     observer.observe(heroEl);
     return () => observer.disconnect();
-  }, [showIntro, isOpen]);
+  }, [showIntro]);
+
+  useEffect(() => {
+    if (isHeroVisible) {
+      setIsOpen(false);
+    }
+  }, [isHeroVisible]);
 
   const handleClose = useCallback(() => setIsOpen(false), []);
   const handleToggle = useCallback(() => setIsOpen((prev) => !prev), []);
