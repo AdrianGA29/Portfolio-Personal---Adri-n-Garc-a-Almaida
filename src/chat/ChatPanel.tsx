@@ -56,7 +56,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
       setIsTyping(true);
 
       try {
-        const response = await sendMessage([...messages, userMsg], message);
+        const response = await sendMessage(messages, message);
         const botMsg = createMessage("assistant", response);
         setMessages((prev) => [...prev, botMsg]);
       } catch {
