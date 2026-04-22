@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import ReactMarkdown from "react-markdown";
 import type { ChatAction } from "./chat-utils";
 import { scrollToSection } from "./chat-utils";
 
@@ -36,7 +37,9 @@ export function ChatMessageBubble({ role, content, actions, onNavigate }: ChatMe
         }`}
       >
         {/* Message text */}
-        <p className="whitespace-pre-wrap">{content}</p>
+        <div className="prose prose-sm md:prose-base prose-invert max-w-none prose-p:leading-relaxed prose-p:my-1 prose-a:text-primary prose-strong:text-white prose-ul:my-1 prose-li:my-0 prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:m-0">
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
 
         {/* Actions */}
         {actions && actions.length > 0 && (

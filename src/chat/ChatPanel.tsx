@@ -6,7 +6,7 @@ import { TypingIndicator } from "./TypingIndicator";
 import { sendMessage, createMessage, type ChatMessage } from "./chat-utils";
 
 const WELCOME_MESSAGE =
-  "¡Hola! Soy el asistente del portfolio de Adrián.\n\nPuedo ayudarte a explorar su perfil, experiencia y proyectos, o facilitarte sus datos de contacto.\n\n¿Qué te gustaría saber?";
+  "¡Hola! Soy Orbit, el asistente virtual del portfolio de Adrián.\n\nEstoy aquí para guiarte por su perfil, contarte detalles sobre su experiencia y proyectos, o facilitarte sus datos de contacto.\n\n¿En qué te puedo ayudar hoy?";
 
 interface ChatPanelProps {
   isOpen: boolean;
@@ -20,12 +20,13 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isTyping]);
 
@@ -87,7 +88,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.92, y: 20 }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed bottom-24 right-5 z-[60] flex w-[calc(100vw-2.5rem)] max-w-[400px] flex-col overflow-hidden rounded-2xl border border-white/8 bg-black/90 shadow-[0_8px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:right-6 sm:bottom-24 sm:w-[400px] max-sm:left-5 max-sm:bottom-20"
+      className="fixed bottom-[104px] right-5 z-[60] flex w-[calc(100vw-2.5rem)] max-w-[420px] flex-col overflow-hidden rounded-2xl border border-white/8 bg-black/90 shadow-[0_8px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:right-6 sm:bottom-[104px] sm:w-[420px] max-sm:left-5 max-sm:bottom-[100px]"
       style={{ maxHeight: "min(560px, calc(100vh - 140px))" }}
     >
       {/* ── Header ── */}
@@ -103,9 +104,29 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
           </div>
-          <span className="font-label text-[10px] font-bold uppercase tracking-[0.24em] text-primary">
-            adrian.ai
-          </span>
+          
+          <div className="flex items-center gap-2">
+            {/* Avatar Orbit in header */}
+            <div className="relative h-7 w-7">
+              <motion.img
+                src="/chat/orbit_idle.png"
+                alt="Orbit Idle"
+                animate={{ opacity: isTyping ? 0 : 1, scale: isTyping ? 0.9 : 1 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 h-full w-full object-contain drop-shadow"
+              />
+              <motion.img
+                src="/chat/orbit_happy.png"
+                alt="Orbit Happy"
+                animate={{ opacity: isTyping ? 1 : 0, scale: isTyping ? 1 : 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 h-full w-full object-contain drop-shadow"
+              />
+            </div>
+            <span className="font-label text-[11px] font-bold uppercase tracking-[0.24em] text-primary">
+              Orbit.ai
+            </span>
+          </div>
         </div>
         <span className="flex items-center gap-1.5 font-label text-[8px] uppercase tracking-[0.2em] text-white/30">
           <span className="h-1 w-1 rounded-full bg-primary animate-[pulseGlow_3s_ease-in-out_infinite]" />
@@ -141,6 +162,9 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
         )}
 
         {isTyping && <TypingIndicator />}
+        
+        {/* Dummy element for auto-scroll */}
+        <div ref={messagesEndRef} className="h-1" />
       </div>
 
       {/* ── Input ── */}

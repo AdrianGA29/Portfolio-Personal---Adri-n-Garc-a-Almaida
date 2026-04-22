@@ -15,7 +15,7 @@ export function ChatLauncher({ onClick, isOpen }: ChatLauncherProps) {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.94 }}
       transition={{ type: "spring", damping: 18, stiffness: 300 }}
-      className="fixed bottom-6 right-5 z-[60] flex h-[52px] w-[52px] items-center justify-center rounded-full border border-white/10 bg-surface-container-high/90 shadow-lg backdrop-blur-xl transition-colors hover:border-primary/30 sm:right-6"
+      className="fixed bottom-6 right-5 z-[60] flex h-[64px] w-[64px] items-center justify-center rounded-full border border-white/10 bg-surface-container-high/90 shadow-lg backdrop-blur-xl transition-colors hover:border-primary/30 sm:right-6"
       aria-label={isOpen ? "Cerrar chat" : "Abrir chat"}
       aria-expanded={isOpen}
     >
@@ -39,14 +39,23 @@ export function ChatLauncher({ onClick, isOpen }: ChatLauncherProps) {
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
       </span>
 
-      {/* Icon: terminal cursor >_ */}
-      <motion.span
-        animate={{ rotate: isOpen ? 45 : 0 }}
-        transition={{ duration: 0.25 }}
-        className="relative font-label text-sm font-bold text-primary"
-      >
-        {isOpen ? "✕" : ">_"}
-      </motion.span>
+      {/* Avatar Orbit */}
+      <div className="relative h-14 w-14">
+        <motion.img
+          src="/chat/orbit_idle.png"
+          alt="Orbit Idle"
+          animate={{ opacity: isOpen ? 0 : 1, scale: isOpen ? 0.9 : 1.15 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+        <motion.img
+          src="/chat/orbit_happy.png"
+          alt="Orbit Happy"
+          animate={{ opacity: isOpen ? 1 : 0, scale: isOpen ? 1.15 : 0.9 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+      </div>
     </motion.button>
   );
 }
