@@ -1,10 +1,8 @@
 import { motion, useReducedMotion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { useRef, useState, useCallback } from "react";
-import { Mail, Phone, Linkedin, Check, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Phone, Linkedin, Check, ArrowRight } from "lucide-react";
 
-// ── Types ─────────────────────────────────────────────
-
-type FormStatus = "idle" | "sending" | "success" | "error";
+type FormStatus = "idle" | "success" | "error";
 
 interface FormData {
   name: string;
@@ -19,18 +17,17 @@ interface FormErrors {
   message?: string;
 }
 
-// ── Constants ─────────────────────────────────────────
-
+const CONTACT_EMAIL = "adriangarciafp29@gmail.com";
 const MAX_MESSAGE_LENGTH = 500;
 
 const channels = [
   {
     label: "Email",
-    value: "adriangarciafp29@gmail.com",
+    value: CONTACT_EMAIL,
     Icon: Mail,
     accentHex: "#00eefc",
-    copyValue: "adriangarciafp29@gmail.com",
-    href: "mailto:adriangarciafp29@gmail.com",
+    copyValue: CONTACT_EMAIL,
+    href: `mailto:${CONTACT_EMAIL}`,
     copyable: true,
   },
   {
@@ -53,8 +50,6 @@ const channels = [
   },
 ] as const;
 
-// ── Validation ────────────────────────────────────────
-
 function validateForm(data: FormData): FormErrors {
   const errors: FormErrors = {};
   if (!data.name.trim()) errors.name = "Nombre requerido";
@@ -67,35 +62,21 @@ function validateForm(data: FormData): FormErrors {
   return errors;
 }
 
-// ── Web3Forms Submit ──────────────────────────────────
+function buildMailtoLink(data: FormData) {
+  const subject = data.subject.trim() || `Contacto desde el portfolio — ${data.name.trim()}`;
+  const body = [
+    "Hola Adrián,",
+    "",
+    `Mi nombre es ${data.name.trim()}.`,
+    `Mi email es ${data.email.trim()}.`,
+    "",
+    data.message.trim(),
+    "",
+    "Enviado desde el formulario de contacto del portfolio.",
+  ].join("\n");
 
-async function submitToWeb3Forms(data: FormData): Promise<void> {
-  const key = process.env.WEB3FORMS_KEY;
-  if (!key) {
-    console.warn("[Contact] WEB3FORMS_KEY not set — simulating send");
-    await new Promise((r) => setTimeout(r, 1800));
-    return;
-  }
-
-  const res = await fetch("https://api.web3forms.com/submit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      access_key: key,
-      name: data.name,
-      email: data.email,
-      subject: data.subject || `Portfolio — ${data.name}`,
-      message: data.message,
-      from_name: "Portfolio Adrián García",
-    }),
-  });
-
-  if (!res.ok) throw new Error("Network error");
-  const result = await res.json();
-  if (!result.success) throw new Error(result.message || "Submit failed");
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
-
-// ── Animation Variants ────────────────────────────────
 
 const revealUp = {
   hidden: { opacity: 0, y: 28 },
@@ -105,8 +86,6 @@ const revealUp = {
     transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
-
-// ── Floating Field ────────────────────────────────────
 
 function FloatingField({
   id,
@@ -144,7 +123,6 @@ function FloatingField({
 
   return (
     <div className="relative pt-5">
-      {/* Label */}
       <motion.label
         htmlFor={id}
         className="pointer-events-none absolute left-1 font-label text-[10px] font-bold uppercase tracking-[0.22em]"
@@ -160,7 +138,6 @@ function FloatingField({
         {required && <span className="ml-0.5 text-primary/40">*</span>}
       </motion.label>
 
-      {/* Input */}
       <Tag
         id={id}
         type={isTextarea ? undefined : type}
@@ -178,11 +155,10 @@ function FloatingField({
         }`}
         style={{
           borderBottomColor: borderColor,
-          boxShadow: focused ? `0 4px 16px -6px rgba(57,255,20,0.18)` : "none",
+          boxShadow: focused ? "0 4px 16px -6px rgba(57,255,20,0.18)" : "none",
         }}
       />
 
-      {/* Bottom row: error / valid / char count */}
       <div className="mt-1.5 flex min-h-[16px] items-center justify-between">
         <AnimatePresence mode="wait">
           {error ? (
@@ -230,8 +206,6 @@ function FloatingField({
   );
 }
 
-// ── Contact Channel ───────────────────────────────────
-
 function ContactChannel({
   label,
   value,
@@ -251,7 +225,7 @@ function ContactChannel({
         setCopied(true);
         setTimeout(() => setCopied(false), 2200);
       } catch {
-        window.open(href);
+        window.location.href = href;
       }
     } else {
       window.open(href, "_blank", "noopener,noreferrer");
@@ -269,12 +243,9 @@ function ContactChannel({
       custom={0.1 + index * 0.1}
       className="group relative flex w-full items-center gap-4 rounded-xl border border-white/[0.05] px-5 py-4 text-left transition-all duration-300 hover:border-white/10 hover:bg-white/[0.02]"
     >
-      {/* Icon container */}
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 transition-all duration-300 group-hover:border-transparent"
-        style={{
-          transition: "border-color 0.3s, box-shadow 0.3s",
-        }}
+        style={{ transition: "border-color 0.3s, box-shadow 0.3s" }}
       >
         <Icon
           size={17}
@@ -292,7 +263,6 @@ function ContactChannel({
         </p>
       </div>
 
-      {/* Copy / open indicator */}
       <div className="ml-auto shrink-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <AnimatePresence mode="wait">
           {copied ? (
@@ -320,7 +290,6 @@ function ContactChannel({
         </AnimatePresence>
       </div>
 
-      {/* Hover accent line */}
       <span
         className="absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"
         style={{ backgroundColor: accentHex, opacity: 0.5 }}
@@ -329,14 +298,11 @@ function ContactChannel({
   );
 }
 
-// ── Submit Button ─────────────────────────────────────
-
 function SubmitButton({ status }: { status: FormStatus }) {
   return (
     <motion.button
       type="submit"
-      disabled={status === "sending" || status === "success"}
-      className="relative mt-2 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl py-4 font-label text-[11px] font-bold uppercase tracking-[0.22em] transition-all duration-300 disabled:cursor-not-allowed"
+      className="relative mt-2 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl py-4 font-label text-[11px] font-bold uppercase tracking-[0.22em] transition-all duration-300"
       style={{
         background:
           status === "success"
@@ -354,43 +320,13 @@ function SubmitButton({ status }: { status: FormStatus }) {
           status === "success"
             ? "0 0 30px rgba(57,255,20,0.2)"
             : "0 0 20px rgba(57,255,20,0.08)",
-        animation:
-          status === "error" ? "shakeError 0.5s ease-in-out" : undefined,
+        animation: status === "error" ? "shakeError 0.5s ease-in-out" : undefined,
       }}
-      whileHover={
-        status === "idle"
-          ? { boxShadow: "0 0 36px rgba(57,255,20,0.25)", scale: 1.01 }
-          : undefined
-      }
-      whileTap={status === "idle" ? { scale: 0.985 } : undefined}
+      whileHover={{ boxShadow: "0 0 36px rgba(57,255,20,0.25)", scale: 1.01 }}
+      whileTap={{ scale: 0.985 }}
     >
-      {/* Scan line across button */}
-      {status === "sending" && (
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, rgba(57,255,20,0.08), transparent)",
-            backgroundSize: "200% 100%",
-          }}
-          animate={{ backgroundPosition: ["-200% 0", "200% 0"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-        />
-      )}
-
       <AnimatePresence mode="wait">
-        {status === "sending" ? (
-          <motion.span
-            key="sending"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="flex items-center gap-2"
-          >
-            <Loader2 size={14} className="animate-spin" />
-            Transmitiendo…
-          </motion.span>
-        ) : status === "success" ? (
+        {status === "success" ? (
           <motion.span
             key="success"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -400,7 +336,7 @@ function SubmitButton({ status }: { status: FormStatus }) {
             style={{ animation: "transmitPulse 1s ease-out" }}
           >
             <Check size={14} />
-            Señal enviada
+            Abriendo tu email
           </motion.span>
         ) : status === "error" ? (
           <motion.span
@@ -419,7 +355,7 @@ function SubmitButton({ status }: { status: FormStatus }) {
             exit={{ opacity: 0, y: -8 }}
             className="flex items-center gap-2"
           >
-            Enviar señal
+            Preparar email
             <ArrowRight size={14} />
           </motion.span>
         )}
@@ -427,8 +363,6 @@ function SubmitButton({ status }: { status: FormStatus }) {
     </motion.button>
   );
 }
-
-// ── Main Component ────────────────────────────────────
 
 export default function Contact() {
   const reduceMotion = useReducedMotion();
@@ -441,7 +375,6 @@ export default function Contact() {
   const glowLeftY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [30, -30]);
   const glowRightY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-20, 40]);
 
-  // ── Form State ──
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -450,7 +383,7 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>("idle");
-  const [honeypot, setHoneypot] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const updateField = useCallback(
     (field: keyof FormData) => (value: string) => {
@@ -469,30 +402,34 @@ export default function Contact() {
   );
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    (e: React.FormEvent) => {
       e.preventDefault();
-      if (honeypot) return; // bot detected
 
       const validationErrors = validateForm(formData);
       setErrors(validationErrors);
-      if (Object.keys(validationErrors).length > 0) return;
-
-      setStatus("sending");
+      if (Object.keys(validationErrors).length > 0) {
+        setStatus("error");
+        setSubmitError("Revisa los campos marcados antes de continuar.");
+        return;
+      }
 
       try {
-        await submitToWeb3Forms(formData);
+        const mailtoLink = buildMailtoLink(formData);
         setStatus("success");
-        setTimeout(() => {
-          setFormData({ name: "", email: "", subject: "", message: "" });
-          setErrors({});
+        setSubmitError("");
+        window.location.href = mailtoLink;
+
+        window.setTimeout(() => {
           setStatus("idle");
-        }, 4000);
+        }, 2500);
       } catch {
         setStatus("error");
-        setTimeout(() => setStatus("idle"), 3500);
+        setSubmitError(
+          "No se pudo abrir tu cliente de correo. Escríbeme directamente a adriangarciafp29@gmail.com.",
+        );
       }
     },
-    [formData, honeypot],
+    [formData],
   );
 
   return (
@@ -501,7 +438,6 @@ export default function Contact() {
       id="contact"
       className="relative overflow-hidden bg-surface px-6 py-32"
     >
-      {/* ── Ambient Glow ── */}
       <div className="pointer-events-none absolute inset-0">
         <motion.div
           style={{ y: glowLeftY }}
@@ -515,9 +451,6 @@ export default function Contact() {
       </div>
 
       <div className="relative mx-auto max-w-7xl">
-        {/* ═══════════════════════════════════════════
-            SECTION HEADER
-        ═══════════════════════════════════════════ */}
         <motion.header
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -527,7 +460,6 @@ export default function Contact() {
         >
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] lg:items-end">
             <div>
-              {/* Badge */}
               <div className="mb-5 inline-flex items-center gap-3">
                 <span className="h-px w-10 bg-gradient-to-r from-secondary to-transparent" />
                 <span className="font-label text-[10px] font-bold uppercase tracking-[0.3em] text-secondary">
@@ -535,18 +467,17 @@ export default function Contact() {
                 </span>
               </div>
 
-              {/* Headline */}
               <h2 className="max-w-4xl text-balance text-5xl font-black leading-none tracking-tighter text-on-surface md:text-7xl">
                 Envíame una{" "}
                 <span className="gradient-text-animate">señal</span>
               </h2>
             </div>
 
-            {/* Subtitle column */}
             <div className="space-y-4 border-l border-white/10 pl-6">
               <p className="text-pretty text-sm leading-relaxed text-on-surface-variant">
                 ¿Buscas un perfil técnico con base real, criterio propio y capacidad de
-                aprendizaje rápido? Escríbeme directamente o usa el formulario.
+                aprendizaje rápido? El formulario preparará un email con tu mensaje para que
+                puedas enviarlo de forma rápida.
               </p>
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 animate-[pulseGlow_3s_ease-in-out_infinite] rounded-full bg-primary" />
@@ -558,7 +489,6 @@ export default function Contact() {
           </div>
         </motion.header>
 
-        {/* ── Expanding divider ── */}
         <motion.div
           className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
           initial={{ scaleX: 0 }}
@@ -567,11 +497,7 @@ export default function Contact() {
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         />
 
-        {/* ═══════════════════════════════════════════
-            MAIN CONTENT — 2 COLUMNS
-        ═══════════════════════════════════════════ */}
         <div className="mt-16 grid gap-16 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-20">
-          {/* ── LEFT: Contact Channels ── */}
           <div>
             <motion.p
               initial="hidden"
@@ -590,7 +516,6 @@ export default function Contact() {
               ))}
             </div>
 
-            {/* Closing note */}
             <motion.p
               initial="hidden"
               whileInView="visible"
@@ -599,23 +524,19 @@ export default function Contact() {
               custom={0.5}
               className="mt-10 max-w-xs text-pretty text-[13px] leading-relaxed text-on-surface-variant/60"
             >
-              Respondo normalmente en menos de 24 horas. Si es urgente, el
-              teléfono es la vía más rápida.
+              Respondo normalmente en menos de 24 horas. Si no se abre tu cliente de correo,
+              puedes escribirme directamente a {CONTACT_EMAIL}.
             </motion.p>
           </div>
 
-          {/* ── RIGHT: Transmission Panel ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8"
-            style={{
-              animation: "panelBreathe 4s ease-in-out infinite",
-            }}
+            style={{ animation: "panelBreathe 4s ease-in-out infinite" }}
           >
-            {/* Terminal header */}
             <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1.5">
@@ -629,27 +550,13 @@ export default function Contact() {
               </div>
               <span className="flex items-center gap-1.5 font-label text-[8px] uppercase tracking-[0.18em] text-white/20">
                 <span className="h-1 w-1 rounded-full bg-primary animate-[pulseGlow_3s_ease-in-out_infinite]" />
-                Seguro
+                Mailto
               </span>
             </div>
 
-            {/* Gradient separator */}
             <div className="mb-8 h-px w-full bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-              {/* Honeypot — hidden from real users */}
-              <div className="absolute -left-[9999px] opacity-0" aria-hidden="true">
-                <input
-                  type="text"
-                  name="bot_field"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-              </div>
-
               <FloatingField
                 id="contact-name"
                 label="Nombre"
@@ -690,7 +597,10 @@ export default function Contact() {
 
               <SubmitButton status={status} />
 
-              {/* Success overlay message */}
+              <p className="text-center text-[11px] leading-relaxed text-on-surface-variant/60">
+                Al pulsar, se abrirá tu aplicación de correo con el mensaje ya preparado.
+              </p>
+
               <AnimatePresence>
                 {status === "success" && (
                   <motion.p
@@ -699,7 +609,20 @@ export default function Contact() {
                     exit={{ opacity: 0 }}
                     className="mt-3 text-center text-[12px] text-primary/60"
                   >
-                    Tu mensaje ha sido transmitido. Responderé lo antes posible.
+                    Se ha preparado el email para enviarlo a {CONTACT_EMAIL}.
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence>
+                {status === "error" && submitError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-3 text-center text-[12px] text-[#ff8a80]"
+                  >
+                    {submitError}
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -707,9 +630,6 @@ export default function Contact() {
           </motion.div>
         </div>
 
-        {/* ═══════════════════════════════════════════
-            CLOSING DIVIDER
-        ═══════════════════════════════════════════ */}
         <motion.div
           className="mt-20 h-px w-full bg-gradient-to-r from-transparent via-white/16 to-transparent"
           initial={{ scaleX: 0 }}
