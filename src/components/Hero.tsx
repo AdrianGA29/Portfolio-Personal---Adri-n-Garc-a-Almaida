@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { MatrixText } from "./MatrixText";
 import HeroVisual from "./HeroVisual";
 
-const TITLE_WORDS = "ADRIÁN GARCÍA ALMAIDA".split(" ");
+const TITLE_WORDS = "ADRIAN GARCIA ALMAIDA".split(" ");
 const FALLBACK_GRADIENT = {
   background:
     "radial-gradient(circle at 50% 45%, rgba(57,255,20,0.14) 0%, rgba(0,238,252,0.08) 24%, rgba(0,0,0,0) 58%)",
@@ -11,10 +11,9 @@ const FALLBACK_GRADIENT = {
 
 export default function Hero() {
   const [visibleWords, setVisibleWords] = useState(0);
-  const delays = useMemo(
-    () => TITLE_WORDS.map(() => Math.random() * 0.07),
-    [],
-  );
+  const [isHeroActive, setIsHeroActive] = useState(true);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const delays = useMemo(() => TITLE_WORDS.map(() => Math.random() * 0.07), []);
 
   useEffect(() => {
     if (visibleWords < TITLE_WORDS.length) {
@@ -23,9 +22,22 @@ export default function Hero() {
     }
   }, [visibleWords]);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsHeroActive(entry.isIntersecting),
+      { threshold: 0 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="home" className="relative h-screen overflow-hidden bg-background">
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-center px-6 text-center">
+    <section ref={sectionRef} id="home" className="relative h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,10 +94,12 @@ export default function Hero() {
           className="mt-6 flex min-h-[2rem] items-center justify-center"
         >
           <MatrixText
-            text="Técnico Informático & Trainee Developer"
+            text="Tecnico Informatico & Trainee Developer"
             initialDelay={500}
             letterInterval={80}
             letterAnimationDuration={400}
+            isActive={isHeroActive}
+            loop
           />
         </motion.div>
       </div>
@@ -97,7 +111,7 @@ export default function Hero() {
 
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0" style={FALLBACK_GRADIENT} />
-        <HeroVisual />
+        <HeroVisual active={isHeroActive} />
       </div>
     </section>
   );

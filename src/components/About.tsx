@@ -148,7 +148,12 @@ export default function About() {
   ]);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden px-6 py-32" id="about">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden px-6 py-32"
+      id="about"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 1400px" }}
+    >
       {/* ── Ambient Glow Background ── */}
       <div className="pointer-events-none absolute inset-0">
         <motion.div

@@ -17,7 +17,16 @@ interface MatrixTextProps {
   letterAnimationDuration?: number;
   letterInterval?: number;
   readDelay?: number;
+  isActive?: boolean;
+  loop?: boolean;
 }
+
+const createLetters = (text: string): LetterState[] =>
+  text.split("").map((char) => ({
+    char,
+    isMatrix: false,
+    isSpace: char === " ",
+  }));
 
 export const MatrixText = ({
   text = "HelloWorld!",
@@ -26,14 +35,10 @@ export const MatrixText = ({
   letterAnimationDuration = 400,
   letterInterval = 80,
   readDelay = 3000,
+  isActive = true,
+  loop = true,
 }: MatrixTextProps) => {
-  const [letters, setLetters] = useState<LetterState[]>(() =>
-    text.split("").map((char) => ({
-      char,
-      isMatrix: false,
-      isSpace: char === " ",
-    }))
-  );
+  const [letters, setLetters] = useState<LetterState[]>(() => createLetters(text));
   
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
@@ -81,22 +86,23 @@ export const MatrixText = ({
   );
 
   const startAnimation = useCallback(() => {
+    if (!isActive) {
+      setLetters(createLetters(text));
+      return;
+    }
+
     clearAllTimeouts();
     
-    // Reset to initial state
-    setLetters(text.split("").map((char) => ({
-      char,
-      isMatrix: false,
-      isSpace: char === " ",
-    })));
+    setLetters(createLetters(text));
 
     let currentIndex = 0;
 
     const animate = () => {
       if (currentIndex >= text.length) {
-        // When finished, wait readDelay and restart
-        const restartTimeout = setTimeout(startAnimation, readDelay);
-        timeoutsRef.current.push(restartTimeout);
+        if (loop) {
+          const restartTimeout = setTimeout(startAnimation, readDelay);
+          timeoutsRef.current.push(restartTimeout);
+        }
         return;
       }
 
@@ -107,13 +113,19 @@ export const MatrixText = ({
     };
 
     animate();
-  }, [animateLetter, text, letterInterval, readDelay, clearAllTimeouts]);
+  }, [animateLetter, text, letterInterval, readDelay, clearAllTimeouts, isActive, loop]);
 
   useEffect(() => {
+    if (!isActive) {
+      clearAllTimeouts();
+      setLetters(createLetters(text));
+      return;
+    }
+
     const initialTimer = setTimeout(startAnimation, initialDelay);
     timeoutsRef.current.push(initialTimer);
     return () => clearAllTimeouts();
-  }, [startAnimation, initialDelay, clearAllTimeouts]);
+  }, [startAnimation, initialDelay, clearAllTimeouts, isActive, text]);
 
   const motionVariants = useMemo(
     () => ({

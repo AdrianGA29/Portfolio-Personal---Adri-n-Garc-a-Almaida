@@ -36,6 +36,7 @@ export default function Projects() {
         ref={sectionRef}
         id="projects"
         className="relative overflow-hidden bg-surface px-6 py-32"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1px 1400px" }}
       >
         {/* ── Ambient Glow ── */}
         <div className="pointer-events-none absolute inset-0">

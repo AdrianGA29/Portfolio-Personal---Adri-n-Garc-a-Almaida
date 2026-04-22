@@ -356,6 +356,7 @@ export default function Experience() {
       ref={sectionRef}
       id="experience"
       className="relative overflow-hidden bg-surface px-6 py-32"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 1800px" }}
     >
       {/* ── Ambient Glow ── */}
       <div className="pointer-events-none absolute inset-0">

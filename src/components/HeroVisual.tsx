@@ -102,10 +102,11 @@ function Scene() {
   const [w, h] = useAspect(WIDTH, HEIGHT);
   const timer = useMemo(() => new THREE.Timer(), []);
 
-  useFrame(() => {
+  useFrame(({ pointer }) => {
     timer.update();
     const elapsedTime = timer.getElapsed();
     uniforms.uProgress.value = Math.sin(elapsedTime * 0.5) * 0.5 + 0.5;
+    uniforms.uPointer.value = pointer;
 
     if (meshRef.current?.material && "opacity" in meshRef.current.material) {
       const currentMaterial = meshRef.current.material as { opacity: number };
@@ -115,10 +116,6 @@ function Scene() {
         0.07,
       );
     }
-  });
-
-  useFrame(({ pointer }) => {
-    uniforms.uPointer.value = pointer;
   });
 
   return (
@@ -132,11 +129,20 @@ function Scene() {
   );
 }
 
-export default function HeroVisual() {
+interface HeroVisualProps {
+  active?: boolean;
+}
+
+export default function HeroVisual({ active = true }: HeroVisualProps) {
+  if (!active) {
+    return null;
+  }
+
   return (
     <Canvas
       flat
-      dpr={[1, 1.5]}
+      dpr={[1, 1.2]}
+      performance={{ min: 0.7 }}
       style={{ width: "100%", height: "100%" }}
       gl={async (props) => {
         const rendererProps = props as Record<string, unknown>;
@@ -150,10 +156,6 @@ export default function HeroVisual() {
       }}
       onCreated={({ gl, size }) => {
         gl.setSize(size.width, size.height);
-        window.requestAnimationFrame(() => {
-          gl.setSize(size.width, size.height);
-          window.dispatchEvent(new Event("resize"));
-        });
       }}
     >
       <PostProcessing />

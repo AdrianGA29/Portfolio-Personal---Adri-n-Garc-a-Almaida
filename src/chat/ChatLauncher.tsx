@@ -15,7 +15,7 @@ export function ChatLauncher({ onClick, isOpen }: ChatLauncherProps) {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.94 }}
       transition={{ type: "spring", damping: 18, stiffness: 300 }}
-      className="fixed bottom-6 right-5 z-[60] flex h-[64px] w-[64px] items-center justify-center rounded-full border border-white/10 bg-surface-container-high/90 shadow-lg backdrop-blur-xl transition-colors hover:border-primary/30 sm:right-6"
+      className="fixed bottom-6 right-5 z-[60] flex h-[90px] w-[90px] items-center justify-center rounded-full border border-white/10 bg-surface-container-high/90 shadow-lg backdrop-blur-xl transition-colors hover:border-primary/30 sm:right-6 sm:h-[90px] sm:w-[90px]"
       aria-label={isOpen ? "Cerrar chat" : "Abrir chat"}
       aria-expanded={isOpen}
     >
@@ -34,13 +34,13 @@ export function ChatLauncher({ onClick, isOpen }: ChatLauncherProps) {
       />
 
       {/* Active badge dot */}
-      <span className="absolute -right-0.5 -top-0.5 z-10 flex h-2.5 w-2.5 items-center justify-center">
+      <span className="absolute right-1.5 top-1.5 z-10 flex h-3.5 w-3.5 items-center justify-center">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-30" />
-        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
       </span>
 
       {/* Avatar Orbit */}
-      <div className="relative h-14 w-14">
+      <div className="relative h-[78px] w-[78px] sm:h-[78px] sm:w-[78px]">
         <motion.img
           src="/chat/orbit_idle.png"
           alt="Orbit Idle"

@@ -10,40 +10,46 @@ interface ChatBotProps {
 export default function ChatBot({ showIntro }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isHeroVisible, setIsHeroVisible] = useState(true);
 
-  // Observe Hero section to toggle launcher visibility
   useEffect(() => {
     if (showIntro) {
       setIsVisible(false);
-      setIsHeroVisible(true);
       return;
     }
 
-    const heroEl = document.getElementById("home");
-    if (!heroEl) {
-      setIsVisible(true);
-      return;
-    }
+    let ticking = false;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const heroVisible = entry.isIntersecting && entry.intersectionRatio > 0.3;
-        setIsHeroVisible(heroVisible);
-        setIsVisible(!heroVisible);
-      },
-      { threshold: [0, 0.3, 0.5, 1] },
-    );
+    const syncVisibility = () => {
+      const heroEl = document.getElementById("home");
+      if (!heroEl) {
+        setIsVisible(true);
+        return;
+      }
 
-    observer.observe(heroEl);
-    return () => observer.disconnect();
-  }, [showIntro]);
+      const rect = heroEl.getBoundingClientRect();
+      const heroVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
-  useEffect(() => {
-    if (isHeroVisible) {
-      setIsOpen(false);
-    }
-  }, [isHeroVisible]);
+      setIsVisible(isOpen || !heroVisible);
+    };
+
+    const requestSync = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        syncVisibility();
+        ticking = false;
+      });
+    };
+
+    syncVisibility();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
+
+    return () => {
+      window.removeEventListener("scroll", requestSync);
+      window.removeEventListener("resize", requestSync);
+    };
+  }, [showIntro, isOpen]);
 
   const handleClose = useCallback(() => setIsOpen(false), []);
   const handleToggle = useCallback(() => setIsOpen((prev) => !prev), []);
