@@ -18,7 +18,11 @@ export function ChatMessageBubble({ role, content, actions, onNavigate }: ChatMe
       onNavigate?.();
       setTimeout(() => scrollToSection(action.target), 350);
     } else if (action.type === "link") {
-      window.open(action.target, "_blank", "noopener,noreferrer");
+      if (action.target.startsWith("mailto:") || action.target.startsWith("tel:")) {
+        window.location.href = action.target;
+      } else {
+        window.open(action.target, "_blank", "noopener,noreferrer");
+      }
     }
   };
 

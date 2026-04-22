@@ -30,7 +30,7 @@ function Word({
 
   return (
     <span
-      className={`relative inline-flex ${wordWrapperClassName ?? "mr-[0.34em] mt-[0.18em]"} ${wordClassName ?? ""}`}
+      className={`relative inline-flex ${wordWrapperClassName ?? "mr-[0.34em] mt-[0.18em]"}`}
     >
       <span className={`absolute inset-0 opacity-15 ${ghostClassName ?? ""}`}>{children}</span>
       <motion.span style={{ opacity }} className="relative">
